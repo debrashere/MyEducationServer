@@ -14,6 +14,9 @@ const passport = require('passport');
 // console.log(bobby); // De Niro - the variable name is bobby, not robert
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const blogPostsRouter = require('./routers/blogPostsRouter');
+const blogAuthorRouter = require('./routers/blogAuthorRouter');
+const edToolRouter = require('./routers/edToolRouter');
 
 mongoose.Promise = global.Promise;
 
@@ -23,6 +26,11 @@ const app = express();
 
 // Logging
 app.use(morgan('common'));
+
+//Routers
+app.use('/authors', blogAuthorRouter);
+//app.use('/posts', blogPostsRouter);
+//app.use('/edtools', edToolRouter);
 
 // CORS
 app.use(function (req, res, next) {
@@ -92,6 +100,7 @@ function closeServer() {
 }
 
 if (require.main === module) {
+  console.log("Server DATABASE_URL", DATABASE_URL);
   runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
