@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const passport = require('passport');
+const cors = require('cors');
+const {CLIENT_ORIGIN} = require('./config');
 
 // Here we use destructuring assignment with renaming so the two variables
 // called router (from ./users and ./auth) have different names
@@ -27,11 +29,6 @@ const app = express();
 // Logging
 app.use(morgan('common'));
 
-//Routers
-app.use('/authors', blogAuthorRouter);
-//app.use('/posts', blogPostsRouter);
-//app.use('/edtools', edToolRouter);
-
 // CORS
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -43,11 +40,24 @@ app.use(function (req, res, next) {
   next();
 });
 
+// CORS
+app.use(
+  cors({
+      origin: CLIENT_ORIGIN
+  })
+);
+
+
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
+//Routers
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
+app.use('/api/authors', blogAuthorRouter);
+//app.use('/api/posts', blogPostsRouter);
+app.use('/api/edtools', edToolRouter);
+
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
 

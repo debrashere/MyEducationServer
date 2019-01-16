@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-// this is our schema to represent a blog
+// this is our schema to represent educational tools
 const edToolSchema = mongoose.Schema({
   title: {type: String, required: true},  
   url: { type: 'string', unique: true, required: true  },
