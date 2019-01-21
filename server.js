@@ -12,12 +12,9 @@ const {CLIENT_ORIGIN} = require('./config');
 // For example:
 // const actorSurnames = { james: "Stewart", robert: "De Niro" };
 // const { james: jimmy, robert: bobby } = actorSurnames;
-// console.log(jimmy); // Stewart - the variable name is jimmy, not james
-// console.log(bobby); // De Niro - the variable name is bobby, not robert
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const blogPostsRouter = require('./routers/blogPostsRouter');
-const blogAuthorRouter = require('./routers/blogAuthorRouter');
 const edToolRouter = require('./routers/edToolRouter');
 
 mongoose.Promise = global.Promise;
@@ -35,7 +32,7 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
   if (req.method === 'OPTIONS') {
-    return res.send(204);
+    return res.sendStatus(204);
   }
   next();
 });
@@ -54,8 +51,7 @@ passport.use(jwtStrategy);
 //Routers
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
-app.use('/api/authors', blogAuthorRouter);
-//app.use('/api/posts', blogPostsRouter);
+app.use('/api/posts', blogPostsRouter);
 app.use('/api/edtools', edToolRouter);
 
 

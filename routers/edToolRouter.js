@@ -12,12 +12,7 @@ const { EdTool }= require('../models/edToolsModels');
 
 const passport = require('passport');
 const router = express.Router();
-
 const jwtAuth = passport.authenticate('jwt', {session: false});
- 
-// config.js is where we control constants for entire
-// app like PORT and DATABASE_URL
-const { PORT, DATABASE_URL } = require("../config");
 const app = express();
 app.use(express.json());
 
@@ -59,7 +54,6 @@ router.get('/', jwtAuth, (req, res) => {
         
   EdTool.find(toQuery )    
     .then(tools => {
-      console.log("edToolRouter get response", tools.map(tool => tool.serialize()));
       res.status(201).json({
           edTools: tools.map(tool => tool.serialize())
       });
@@ -72,7 +66,6 @@ router.get('/', jwtAuth, (req, res) => {
 });
 
 router.post("/", jwtAuth, jsonParser, (req, res) => {
-  console.log("edToolsrouter post req.body",req.body);
   const requiredFields = ["title", "url", "description","price"];
   for (let i = 0; i < requiredFields.length; i++) {
       const field = requiredFields[i];
@@ -92,8 +85,7 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
     rating: req.body.rating    
   })                     
   .then( tool => {
-    const edTool = tool.serialize();  
-    console.log("edToolsrouter result tool.serialize()",edTool);           
+    const edTool = tool.serialize();         
     res.status(201).json(edTool);
   })    
   .catch( err => {

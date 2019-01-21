@@ -1,5 +1,4 @@
 "use strict";
-
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -7,22 +6,26 @@ mongoose.Promise = global.Promise;
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-const { BlogPost, Author, Comment }= require('../models/blogModels');
-const router = express.Router();
- 
-// config.js is where we control constants for entire
-// app like PORT and DATABASE_URL
-const { PORT, DATABASE_URL } = require("../config");
+const { User }= require('../users/models');
+const { BlogPost, Comment }= require('../models/edToolsModels');
 const app = express();
 app.use(express.json());
 
+const passport = require('passport');
+const router = express.Router();
+
+const jwtAuth = passport.authenticate('jwt', {session: false});
+
 // GET requests to /post
-router.get("/", (req, res) => {
+router.get("/",  jwtAuth, (req, res) => {
   BlogPost
-    .findOne()
-    .populate('authors')
-    .populate('comments')
-    .then(blogPost => res.json(blogPost.serialize()))
+    .find()
+   // .populate('comments')
+    .then(blogPosts => {;
+      res.status(201).json({
+        blogPosts: blogPosts.map(blogPost => blogPost.serialize())
+      });
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
@@ -30,22 +33,23 @@ router.get("/", (req, res) => {
 });
 
 // can also request by ID
-router.get("/:id", (req, res) => {
+router.get("/:id",  jwtAuth, (req, res) => {
   BlogPost
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)  
-    .populate('authors')
     .populate('comments')
-    .then(blogPost => res.json(blogPost.serialize()))
+    .then(blogPost => {
+       res.json(blogPost.serialize())
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
     });
 });
 
-router.post("/", jsonParser, (req, res) => {
-  const requiredFields = ["title", "content", "authorId" ];
+router.post("/", jwtAuth, jsonParser, (req, res) => {
+  const requiredFields = ["title", "content", 'toolId', 'userId' ];
 
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -56,35 +60,30 @@ router.post("/", jsonParser, (req, res) => {
     }
   }
 
-  Author
-    .findById(req.body.authorId)
-    .then(author => {
-      if (author) {
-        console.log("BlogPost find author", req.body);        
+  User
+    .findById(req.body.userId)
+    .then(user => {
+      if (user) {     
         BlogPost
           .create({
             toolId: req.body.toolId,
-            title: req.body.title,
-            content: req.body.content,
-            authors: [req.body.authorId],
-            comments: [Comment.create({content:req.body.comment})]      
+            title: req.body.title,               
+            comments: [{
+              author: req.body.userId,
+              content: req.body.content}]      
           })
           .then(
-            blogPost => res.status(201).json({            
-              id: blogPost.id,
-              toolId: blogPost.toolId,
-              title: blogPost.title,  
-              content: blogPost.content, 
-              author: blogPost.authors,                             
-              comments: blogPost.comments
-            }))
+            blogPost => {   
+              res.status(201).json(blogPost.serialize());    
+            }
+          )
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Something went wrong' });
           });        
       }
       else {
-        const message = `Author not found`;
+        const message = `User not found`;
         console.error(message);
         return res.status(400).send(message);
       }
@@ -95,7 +94,7 @@ router.post("/", jsonParser, (req, res) => {
     });
 });
 
-router.put("/:id", jsonParser, (req, res) => {
+router.put("/:id", jwtAuth, jsonParser, (req, res) => {
   // ensure that the id in the request path and the one in request body match
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message =
@@ -124,7 +123,7 @@ router.put("/:id", jsonParser, (req, res) => {
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id",  jwtAuth, (req, res) => {
   BlogPost.findByIdAndRemove(req.params.id)
     .then(blogPost => res.status(204).end())
     .catch(err => res.status(500).json({ message: "Internal server error" }));
