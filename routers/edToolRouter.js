@@ -54,7 +54,8 @@ router.get('/', jwtAuth, (req, res) => {
         
   EdTool.find(toQuery )    
     .then(tools => {
-      res.status(201).json({
+      console.log("ROUTER EDTOOLs GET tools", tools);
+      res.status(201).json({      
           edTools: tools.map(tool => tool.serialize())
       });
     })
@@ -79,13 +80,13 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
   .create({
     title: req.body.title,
     url: req.body.url,
-    imageUrl: req.body.imageUrl,
     description: req.body.description,
     price: req.body.price ,   
     rating: req.body.rating    
   })                     
   .then( tool => {
-    const edTool = tool.serialize();         
+    const edTool = tool.serialize();   
+    console.log("EDTOOLS ROUTER create response", edTool)      ;
     res.status(201).json(edTool);
   })    
   .catch( err => {
@@ -109,7 +110,7 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = ["title", "url", "imageUrl", "description","price", "rating"];
+  const updateableFields = ["title", "url", "description","price", "rating"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {

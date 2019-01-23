@@ -14,7 +14,6 @@ const commentSchema = mongoose.Schema({
 const edToolSchema = mongoose.Schema({
   title: {type: String, required: true},  
   url: { type: 'string', unique: true, required: true  },
-  imageUrl: { type: 'string' },
   description: 'string',
   price: Number,
   rating: Number
@@ -77,7 +76,6 @@ edToolSchema.methods.serialize = function() {
     id: this._id,
     title: this.title,
     url: this.url,    
-    imageUrl: this.imageUrl,
     description: this.description,
     price: this.price,
     rating: this.rating
