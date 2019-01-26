@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise;
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 //router.use(bodyParser.json());
-const { EdTool }= require('../models/edToolsModels');
+const { Tool }= require('../models/toolsModels');
 
 const passport = require('passport');
 const router = express.Router();
@@ -18,11 +18,11 @@ app.use(express.json());
 
 // can also request by ID
 router.get("/:id", jwtAuth, (req, res) => {
-  EdTool
+  Tool
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)  
-    .then(edTool => res.json(edTool.serialize()))
+    .then(tool => res.json(tool.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
@@ -52,11 +52,11 @@ router.get('/', jwtAuth, (req, res) => {
       }
     }        
         
-  EdTool.find(toQuery )    
+  Tool.find(toQuery )    
     .then(tools => {
-      console.log("ROUTER EDTOOLs GET tools", tools);
+      console.log("ROUTER TOOLS GET tools", tools);
       res.status(201).json({      
-          edTools: tools.map(tool => tool.serialize())
+          tools: tools.map(tool => tool.serialize())
       });
     })
     .catch(err => {
@@ -76,7 +76,7 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
           return res.status(400).send(message);
       }
   }     
-  EdTool
+  Tool
   .create({
     title: req.body.title,
     url: req.body.url,
@@ -84,10 +84,9 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
     price: req.body.price ,   
     rating: req.body.rating    
   })                     
-  .then( tool => {
-    const edTool = tool.serialize();   
-    console.log("EDTOOLS ROUTER create response", edTool)      ;
-    res.status(201).json(edTool);
+  .then( tool => {  
+    console.log("EDTOOLS ROUTER create response", tool.serialize());
+    res.status(201).json(tool.serialize());
   })    
   .catch( err => {
       console.error(err);
@@ -118,16 +117,16 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     }
   });
 
-  EdTool
+  Tool
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
     .findByIdAndUpdate(req.params.id, { $set: toUpdate })
-    .then(edTool => res.status(204).end())
+    .then(tool => res.status(204).end())
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
 router.delete("/:id", jwtAuth, (req, res) => {
-  EdTool.findByIdAndRemove(req.params.id)
-    .then(edTool => res.status(204).end())
+  Tool.findByIdAndRemove(req.params.id)
+    .then(tool => res.status(204).end())
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 

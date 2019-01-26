@@ -15,7 +15,7 @@ const expect = chai.expect;
 // see: https://github.com/chaijs/chai-http
 chai.use(chaiHttp);
 
-describe('EdTools endpoint', function () {
+describe('Tools endpoint', function () {
   const username = 'exampleUser';
   const password = 'examplePass';
   const firstName = 'Example';
@@ -44,11 +44,11 @@ describe('EdTools endpoint', function () {
     return User.remove({});
   });
 
-  describe('/api/edtools', function () {
+  describe('/api/tools', function () {
     it('Should reject requests with no credentials', function () {
       return chai
         .request(app)
-        .get('/api/edtools')
+        .get('/api/tools')
         .then(() =>
           expect.fail(null, null, 'Request should not succeed')
         )
@@ -78,7 +78,7 @@ describe('EdTools endpoint', function () {
 
       return chai
         .request(app)
-        .get('/api/edtools')
+        .get('/api/tools')
         .set('Authorization', `Bearer ${token}`)
         .then(() =>
           expect.fail(null, null, 'Request should not succeed')
@@ -111,7 +111,7 @@ describe('EdTools endpoint', function () {
 
       return chai
         .request(app)
-        .get('/api/edtools')
+        .get('/api/tools')
         .set('authorization', `Bearer ${token}`)
         .then(() =>
           expect.fail(null, null, 'Request should not succeed')
@@ -144,12 +144,12 @@ describe('EdTools endpoint', function () {
 
       return chai
         .request(app)
-        .get('/api/edtools')
+        .get('/api/tools')
         .set('authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(201);
           expect(res.body).to.be.an('object');     
-         // expect(res.body.edTools).should.have.length > 1;
+         // expect(res.body.tools).should.have.length > 1;
         });
     });
   });

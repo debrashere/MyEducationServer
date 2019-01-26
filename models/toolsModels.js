@@ -11,7 +11,7 @@ const commentSchema = mongoose.Schema({
 
 
 // this is our schema to represent educational tools
-const edToolSchema = mongoose.Schema({
+const toolSchema = mongoose.Schema({
   title: {type: String, required: true},  
   url: { type: 'string', unique: true, required: true  },
   description: 'string',
@@ -19,36 +19,35 @@ const edToolSchema = mongoose.Schema({
   rating: Number
 });
 
-const blogPostSchema = mongoose.Schema({ 
-  toolId: {type: mongoose.Schema.Types.ObjectId, ref: 'EdTool'},
-  title: 'string',   
+const blogSchema = mongoose.Schema({ 
+  toolId: {type: mongoose.Schema.Types.ObjectId, ref: 'Tool'}, 
   comments: [commentSchema]
 });
 
-blogPostSchema.pre('find', function(next) {
+blogSchema.pre('find', function(next) {
   this.populate('toolId');
   next();
 });
 
-blogPostSchema.pre('findOne', function(next) {
+blogSchema.pre('findOne', function(next) {
   this.populate('toolId');
   next();
 });
 
 
-blogPostSchema.pre('find', function(next) {
+blogSchema.pre('find', function(next) {
   this.populate('comment');
   next();
 });
 
-blogPostSchema.pre('findOne', function(next) {
+blogSchema.pre('findOne', function(next) {
   this.populate('comment');
   next();
 });
 
 
-blogPostSchema.virtual('toolTitle').get(function() {
-  return `${this.EdTool.title} ${this.EdTool.id}`.trim();
+blogSchema.virtual('toolTitle').get(function() {
+  return `${this.Tool.id}`.trim();
 });
 
 commentSchema.methods.serialize = function() {
@@ -62,16 +61,15 @@ commentSchema.methods.serialize = function() {
 // this is an *instance method* which will be available on all instances
 // of the model. This method will be used to return an object that only
 // exposes *some* of the fields we want from the underlying data
-blogPostSchema.methods.serialize = function() {
+blogSchema.methods.serialize = function() {
   return {
     id: this._id,
     toolId: this.toolId,
-    title: this.title,
     comments: this.comments
   };
 };
 
-edToolSchema.methods.serialize = function() {
+toolSchema.methods.serialize = function() {
   return {
     id: this._id,
     title: this.title,
@@ -82,7 +80,7 @@ edToolSchema.methods.serialize = function() {
   };
 };
  
-const BlogPost = mongoose.model('BlogPost', blogPostSchema);
+const Blog = mongoose.model('Blog', blogSchema);
 const Comment = mongoose.model('Comment', commentSchema);
-const EdTool = mongoose.model('EdTool', edToolSchema);
-module.exports = {BlogPost, Comment, EdTool};
+const Tool = mongoose.model('Tool', toolSchema);
+module.exports = {Blog, Comment, Tool};

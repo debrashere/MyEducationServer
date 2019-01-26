@@ -14,8 +14,8 @@ const {CLIENT_ORIGIN} = require('./config');
 // const { james: jimmy, robert: bobby } = actorSurnames;
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
-const blogPostsRouter = require('./routers/blogPostsRouter');
-const edToolRouter = require('./routers/edToolRouter');
+const blogsRouter = require('./routers/blogsRouter');
+const toolsRouter = require('./routers/toolsRouter');
 
 mongoose.Promise = global.Promise;
 
@@ -51,8 +51,8 @@ passport.use(jwtStrategy);
 //Routers
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
-app.use('/api/posts', blogPostsRouter);
-app.use('/api/edtools', edToolRouter);
+app.use('/api/blogs', blogsRouter);
+app.use('/api/tools', toolsRouter);
 
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
