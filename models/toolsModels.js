@@ -24,32 +24,6 @@ const blogSchema = mongoose.Schema({
   comments: [commentSchema]
 });
 
-blogSchema.pre('find', function(next) {
-  this.populate('toolId');
-  next();
-});
-
-blogSchema.pre('findOne', function(next) {
-  this.populate('toolId');
-  next();
-});
-
-
-blogSchema.pre('find', function(next) {
-  this.populate('comment');
-  next();
-});
-
-blogSchema.pre('findOne', function(next) {
-  this.populate('comment');
-  next();
-});
-
-
-blogSchema.virtual('toolTitle').get(function() {
-  return `${this.Tool.id}`.trim();
-});
-
 commentSchema.methods.serialize = function() {
   return {
     id: this._id,
@@ -57,6 +31,32 @@ commentSchema.methods.serialize = function() {
     content: this.content
   };
 };
+
+blogSchema.pre('find', function(next) {
+  this.populate('comments');
+  next();
+});
+
+blogSchema.pre('findOne', function(next) {
+  this.populate('comments');
+  next();
+});
+
+blogSchema.pre('find', function(next) {
+  this.populate('toolId');
+  next();
+});
+
+blogSchema.pre('findOne', function(next) {
+  this.populate('toolId');
+  next();
+});
+
+blogSchema.virtual('toolTitle').get(function() {
+  return `${this.Tool.id}`.trim();
+});
+
+
 
 // this is an *instance method* which will be available on all instances
 // of the model. This method will be used to return an object that only
@@ -81,6 +81,6 @@ toolSchema.methods.serialize = function() {
 };
  
 const Blog = mongoose.model('Blog', blogSchema);
-const Comment = mongoose.model('Comment', commentSchema);
+//const Comment = mongoose.model('Comment', commentSchema);
 const Tool = mongoose.model('Tool', toolSchema);
-module.exports = {Blog, Comment, Tool};
+module.exports = {Blog, Tool};
