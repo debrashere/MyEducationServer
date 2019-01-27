@@ -6,7 +6,6 @@ mongoose.Promise = global.Promise;
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-const { User }= require('../users/models');
 const { Blog }= require('../models/toolsModels');
 const app = express();
 app.use(express.json());
@@ -34,11 +33,7 @@ router.get("/",  jwtAuth, (req, res) => {
 
 // can also request by ID
 router.get("/:id",  jwtAuth, (req, res) => {
-  console.log("ROUTER get blog by id req.body ", req.body);
-  console.log("ROUTER get blog by id req.params", req.params);
   Blog
-    // this is a convenience method Mongoose provides for searching
-    // by the object _id property
     .find({toolId: req.params.id})  
     .then(blogs => {   
       console.log("ROUTER get blog by id blogs ", blogs);
@@ -61,36 +56,23 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
       console.error(message);
       return res.status(400).send(message);
     }
-  }
-
-  User
-    .find({userId: req.body.userId})
-    .then(user => {
-      console.log("DEBUG --- ROUTER blogsRouter POST find user", user);
-      if (user) {     
-        Blog
-          .create({
-            toolId: req.body.toolId,              
-            comments: [{
-              author: user._id,
-              content: req.body.content}]      
-          })
-          .then(
-            blog => {   
-              res.status(201).json(blog.serialize());    
-            }
-          )
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: 'Something went wrong' });
-          });        
-      }
-      else {
-        const message = `User not found`;
-        console.error(message);
-        return res.status(400).send(message);
-      }
-    })
+  }        
+    Blog 
+      .create({
+        toolId: req.body.toolId,              
+        comments: [{
+          author: req.body.userId,
+          content: req.body.content}]      
+      })
+      .then(
+        blog => {   
+          res.status(201).json(blog.serialize());    
+        }
+      )
+      .catch(err => {
+        console.error(err);
+        res.status(500).json({ error: 'Something went wrong' });
+    })     
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: "Internal server error" });
@@ -98,6 +80,7 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
 });
 
 router.put("/:id", jwtAuth, jsonParser, (req, res) => {
+  console.log("ROUTER blogRouter --- PUT --- req.body", req.body);
   // ensure that the id in the request path and the one in request body match
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message =
@@ -111,13 +94,15 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = [ "content", "authors", "comments"];
+  const updateableFields = ["comments"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
       toUpdate[field] = req.body[field];
     }
   });
+
+  console.log("ROUTER blogRouter --- PUT --- toUpdate", toUpdate);
 
   Blog
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
