@@ -20,10 +20,8 @@ router.get("/",  jwtAuth, (req, res) => {
   Blog
     .find()
    // .populate('comments')
-    .then(blogs => {;
-      res.status(201).json({
-        blogs: blogs.map(blog => blog.serialize())
-      });
+    .then(blogs => {;   
+        res.status(201).json(blogs.map(blog => blog.serialize()));   
     })
     .catch(err => {
       console.error(err);
@@ -36,8 +34,7 @@ router.get("/:id",  jwtAuth, (req, res) => {
   Blog
     .find({toolId: req.params.id})  
     .then(blogs => {   
-      console.log("ROUTER get blog by id blogs ", blogs);
-       res.json(blogs.map(blog => blog.serialize()))     
+          res.json(blogs.map(blog => blog.serialize()))     
     })
     .catch(err => {
       console.error(err);
@@ -46,7 +43,6 @@ router.get("/:id",  jwtAuth, (req, res) => {
 });
 
 router.post("/", jwtAuth, jsonParser, (req, res) => {
-  console.log("DEBUG --- ROUTER blogsRouter POST req.body", req.body);
   const requiredFields = [ "content", 'toolId', 'userId' ];
 
   for (let i = 0; i < requiredFields.length; i++) {
@@ -80,7 +76,6 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
 });
 
 router.put("/:id", jwtAuth, jsonParser, (req, res) => {
-  console.log("ROUTER blogRouter --- PUT --- req.body", req.body);
   // ensure that the id in the request path and the one in request body match
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     const message =
@@ -102,7 +97,6 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     }
   });
 
-  console.log("ROUTER blogRouter --- PUT --- toUpdate", toUpdate);
 
   Blog
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
