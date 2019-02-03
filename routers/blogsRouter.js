@@ -20,8 +20,8 @@ router.get("/",  jwtAuth, (req, res) => {
   Blog
     .find()
    // .populate('comments')
-    .then(blogs => {;   
-        res.status(201).json(blogs.map(blog => blog.serialize()));   
+    .then(blogs => {
+       res.status(201).json(blogs.map(blog => blog.serialize()));   
     })
     .catch(err => {
       console.error(err);
@@ -52,7 +52,7 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
       console.error(message);
       return res.status(400).send(message);
     }
-  }        
+  }   
     Blog 
       .create({
         toolId: req.body.toolId,              
@@ -61,9 +61,8 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
           content: req.body.content}]      
       })
       .then(
-        blog => {   
-          res.status(201).json(blog.serialize());    
-        }
+        blog => {
+           res.status(201).json(blog.serialize()); }
       )
       .catch(err => {
         console.error(err);
@@ -84,7 +83,7 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     console.error(message);
     return res.status(400).json({ message: message });
   }
-
+  const blogId = req.param.id;
   // we only support a subset of fields being updateable.
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
@@ -97,18 +96,19 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     }
   });
 
-
   Blog
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
     .findByIdAndUpdate(req.params.id, { $set: toUpdate })
-    .then(blog => res.status(204).end())
+    .then(blog => { res.status(201).json(blog.serialize());  })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 
 router.delete("/:id",  jwtAuth, (req, res) => {
   Blog.findByIdAndRemove(req.params.id)
     .then(blog => res.status(204).end())
-    .catch(err => res.status(500).json({ message: "Internal server error" }));
+    .catch(err => {
+    res.status(500).json({ message: "Internal server error" })
+  });
 });
 
 // catch-all endpoint if client makes request to non-existent endpoint

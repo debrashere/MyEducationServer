@@ -40,6 +40,11 @@ describe('/api/user', function () {
 
   describe('/api/users', function () {
     describe('POST', function () {
+      beforeEach(function(done) {
+        this.timeout(3000); // A very long environment setup.
+        setTimeout(done, 2500);
+      });
+      
       it('Should reject users with missing username', function () {
         return chai
           .request(app)

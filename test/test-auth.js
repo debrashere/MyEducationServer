@@ -16,6 +16,12 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('Auth endpoints', function () {
+  beforeEach(function(done) {
+    this.timeout(3000); // A very long environment setup.
+    setTimeout(done, 2500);
+  });
+
+
   const username = 'exampleUser';
   const password = 'examplePass';
   const firstName = 'Example';

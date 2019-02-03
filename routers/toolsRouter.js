@@ -54,9 +54,7 @@ router.get('/', jwtAuth, (req, res) => {
         
   Tool.find(toQuery )    
     .then(tools => {
-      res.status(201).json({      
-          tools: tools.map(tool => tool.serialize())
-      });
+      res.status(201).json(tools.map(tool => tool.serialize()))      
     })
     .catch(err => {
       console.error(err);
@@ -74,23 +72,41 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
           console.error(message);
           return res.status(400).send(message);
       }
-  }     
+  } 
+
+  // Check if the URL for this tool already exists 
   Tool
-  .create({
-    title: req.body.title,
-    url: req.body.url,
-    description: req.body.description,
-    price: req.body.price ,   
-    rating: req.body.rating    
-  })                     
-  .then( tool => {  
-    res.status(201).json(tool.serialize());
-  })    
+  .find({url: req.body.url})   
+  .then (dupTool => {
+      if (dupTool && dupTool.length > 0) {
+        const message = `Duplicate tool URL, ${req.body.url}`;
+        console.error(message);
+        return res.status(500).json({ error: message});
+      }
+      else {
+      // If this is not a duplicate entry then post the entry
+      Tool
+      .create({
+        title: req.body.title,
+        url: req.body.url,
+        description: req.body.description,
+        price: req.body.price ,   
+        rating: req.body.rating    
+      })                     
+      .then( tool => {  
+        res.status(201).json(tool.serialize());
+      })    
+      .catch( err => {
+          console.error(err);
+          res.status(500).json({ error: 'Something went wrong' });
+      }) 
+    }        
+  })
   .catch( err => {
-      console.error(err);
-      res.status(500).json({ error: 'Something went wrong' });
-    })         
-  })    
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }) 
+})   
 
 
 router.put("/:id", jwtAuth, jsonParser, (req, res) => {
