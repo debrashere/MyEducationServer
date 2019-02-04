@@ -4,6 +4,6 @@ deploy:
   provider: heroku
   api_key:
     secure: "f059ab87-5a1f-4045-b3f9-2cafe0b3ba88"
-  app: MyEducationServer
+  app: myeducationserver
   on:
     repo: debrashere/MyEducationServer
