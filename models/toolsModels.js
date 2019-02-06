@@ -19,6 +19,13 @@ const toolSchema = mongoose.Schema({
   rating: Number
 });
 
+const myToolsSchema = mongoose.Schema({
+  user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
+  Tools: [{toolId: {type: String, unique: true, required: true},          
+         comments: [{comment: {type: String} }]  
+        }]
+});
+
 const blogSchema = mongoose.Schema({ 
   toolId: {type: mongoose.Schema.Types.ObjectId, ref: 'Tool'}, 
   comments: [commentSchema]
@@ -31,6 +38,16 @@ commentSchema.methods.serialize = function() {
     content: this.content
   };
 };
+
+myToolsSchema.pre('find', function(next) {
+  this.populate('user');
+  next();
+});
+
+myToolsSchema.pre('findOne', function(next) {
+  this.populate('user');
+  next();
+});
 
 blogSchema.pre('find', function(next) {
   this.populate('comments');
@@ -80,6 +97,14 @@ toolSchema.methods.serialize = function() {
   };
 };
  
+myToolsSchema.methods.serialize = function() {
+  return {
+    id: this._id,
+    user: this.user,
+    tools: this.tools
+  };
+}
+
 const Blog = mongoose.model('Blog', blogSchema);
 //const Comment = mongoose.model('Comment', commentSchema);
 const Tool = mongoose.model('Tool', toolSchema);
