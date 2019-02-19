@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# test-hold local testing and seeding for local testing
+test-hold/
+

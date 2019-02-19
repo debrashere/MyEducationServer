@@ -3,10 +3,11 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-// this is our schema to represent blog post comments
+// this is our schema to represent blog comments
 const commentSchema = mongoose.Schema({
-  author: {type: String, required: false}, 
-  content: {type: String, required: false},  
+  author: {type: String, required: true}, 
+  content: {type: String, required: true}, 
+  rating: {type: Number, required: true, default:1.0}  
 });
 
 
@@ -22,7 +23,8 @@ const toolSchema = mongoose.Schema({
 const myToolsSchema = mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}, 
   Tools: [{toolId: {type: String, unique: true, required: true},          
-         comments: [{comment: {type: String} }]  
+         comments: [{comment: {type: String} }],
+         rating: {type: Number, required: true} 
         }]
 });
 
@@ -35,7 +37,8 @@ commentSchema.methods.serialize = function() {
   return {
     id: this._id,
     author: this.author,
-    content: this.content
+    content: this.content,
+    rating: this.rating
   };
 };
 
@@ -71,8 +74,7 @@ blogSchema.pre('findOne', function(next) {
 
 blogSchema.virtual('toolTitle').get(function() {
   return `${this.Tool.id}`.trim();
-});
-
+})
 
 
 // this is an *instance method* which will be available on all instances
@@ -101,7 +103,8 @@ myToolsSchema.methods.serialize = function() {
   return {
     id: this._id,
     user: this.user,
-    tools: this.tools
+    tools: this.tools,
+    rating: this.rating
   };
 }
 

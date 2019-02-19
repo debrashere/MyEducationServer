@@ -43,7 +43,7 @@ router.get("/:id",  jwtAuth, (req, res) => {
 });
 
 router.post("/", jwtAuth, jsonParser, (req, res) => {
-  const requiredFields = [ "content", 'toolId', 'userId' ];
+  const requiredFields = [ "content", 'toolId', 'userId', 'rating' ];
 
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -58,7 +58,8 @@ router.post("/", jwtAuth, jsonParser, (req, res) => {
         toolId: req.body.toolId,              
         comments: [{
           author: req.body.userId,
-          content: req.body.content}]      
+          content: req.body.content,
+          rating: req.body.rating}]      
       })
       .then(
         blog => {
@@ -88,7 +89,7 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = ["comments"];
+  const updateableFields = ["comments","rating"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
