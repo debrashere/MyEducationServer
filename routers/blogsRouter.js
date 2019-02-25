@@ -97,10 +97,14 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     }
   });
 
+  // Set option to return updated document
+  const options = { new: true }; 
   Blog
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-    .findByIdAndUpdate(req.params.id, { $set: toUpdate })
-    .then(blog => { res.status(201).json(blog.serialize());  })
+    .findByIdAndUpdate(req.params.id, { $set: toUpdate },  options)
+    .then(blog => { 
+      console.log("SERVER blogRouter PUT blog", blog);
+      res.status(201).json(blog.serialize());  })
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
 

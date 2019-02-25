@@ -224,13 +224,11 @@ describe('USER Registration and Login ', function() {
               chai.request(app)
               .post('/api/auth/login')
               .send(login_details)
-              .then((res, err) => {  
-                //console.log("REGISTERED USER res.body", res.body);                  
+              .then((res, err) => {                  
                 expect(res).to.have.status(200);               
                 expect(res.body.authToken).to.not.be.null; 
                 expect(res.body).to.haveOwnProperty('authToken');     
-                token = 'Bearer ' + res.body.authToken;   
-                //console.log("REGISTERED USER token", token);      
+                token = 'Bearer ' + res.body.authToken;       
                 done();                                                                 
               })          
             }) 
@@ -254,7 +252,6 @@ describe('USER Registration and Login ', function() {
       // need to have access to mutate and access `res` across
       // `.then()` calls below, so declare it here so can modify in place
       let res;
-      //console.log("TOKEN 1 is ", token);
       return chai.request(app)
         .get('/api/tools/')
         .set('Authorization', token)
@@ -277,7 +274,6 @@ describe('USER Registration and Login ', function() {
     it('should return tool with right fields', function() {
       // Strategy: Get back all job tools, and ensure they have expected keys
       let resTool;
-      //console.log("TOKEN 2 is ", token);
       return chai.request(app)
         .get('/api/tools/')
         .set('Authorization', token)
@@ -315,7 +311,6 @@ describe('POST endpoint', function() {
 
       const newTool = generateToolData(1000);
       let mostRecentTool;
-     // console.log("TOKEN 3 is ", token);
       return chai.request(app)
         .post('/api/tools/')
         .set('Authorization', token)
@@ -359,7 +354,6 @@ describe('POST endpoint', function() {
         title: "new what" ,
         rating: 5
       };
-     // console.log("TOKEN 4is ", token);
       return Tool
         .findOne()
         .then(function(tool) {
@@ -395,7 +389,6 @@ describe('POST endpoint', function() {
     it('delete a tool by id', function() {
 
       let tool;
-      //console.log("TOKEN 5 is ", token);
       return Tool
         .findOne()
         .then(function(_tool) {

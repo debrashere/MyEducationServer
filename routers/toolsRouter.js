@@ -131,9 +131,10 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
     }
   });
 
+  const options = { new: true }; 
   Tool
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-    .findByIdAndUpdate(req.params.id, { $set: toUpdate })
+    .findByIdAndUpdate(req.params.id, { $set: toUpdate }, options)
     .then(tool => res.status(204).end())
     .catch(err => res.status(500).json({ message: "Internal server error" }));
 });
