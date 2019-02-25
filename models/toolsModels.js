@@ -7,7 +7,8 @@ mongoose.Promise = global.Promise;
 const commentSchema = mongoose.Schema({
   author: {type: String, required: true}, 
   content: {type: String, required: true}, 
-  rating: {type: Number, required: true, default:1.0}  
+  rating: {type: Number, required: true, default:1.0},
+  commentDate:  {type: Date, required: true, default: Date.now},  
 });
 
 

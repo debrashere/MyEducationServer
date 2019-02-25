@@ -23,7 +23,9 @@ const tools = [
   
   const users = [
       {"firstName": "beebee", "lastName": "sanders", "username": "bsanders", "password": generatePassword()},
-      {"firstName": "deedee", "lastName": "sanders", "username": "dsanders", "password": generatePassword()}
+      {"firstName": "deedee", "lastName": "sanders", "username": "dsanders", "password": generatePassword()},
+      {"firstName": "demo", "lastName": "user", "username": "demoUser", "password": generatePassword()}
+   
     ]
 
 console.log("DEBUG seeding TEST_DATABASE_URL", TEST_DATABASE_URL);
@@ -62,7 +64,7 @@ function seedUserData() {
   console.info('BEFORE seeding user data');
   const seedData = [];
 
-  for (let i=1; i<=100; i++) {
+  for (let i=1; i<=50; i++) {
     seedData.push(generateuserData());
   }
   seedSpecificUserData();
@@ -84,10 +86,13 @@ function generateComments(users) {
   let commentsCount = Math.floor((Math.random() * 7) + 1);
   let comments = [];
   for (let index =0; index<= commentsCount-1; index++) {
-    let userIndex = Math.floor((Math.random() * 80) + 1);
+    let userIndex = Math.floor((Math.random() * 40) + 1);
     comments.push({
       author: users[userIndex].username,
-      content: faker.lorem.sentences()});
+      content: faker.lorem.sentences(),
+      rating: randomRating,
+      commentDate: faker.date.between('2018-01-01', '2019-02-21') 
+    });
    }
   return comments;
 }
@@ -154,11 +159,11 @@ describe('TEST SUITE Seeding Database', function() {
     });
     
     this.beforeAll(function() {
-      return seedToolsData();
-    });
+      return seedUserData();
+  });
 
     this.beforeAll(function() {
-        return seedUserData();
+      return seedToolsData();
     });
 
     this.afterAll(function() {

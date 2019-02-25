@@ -89,7 +89,7 @@ router.put("/:id", jwtAuth, jsonParser, (req, res) => {
   // if the user sent over any of the updatableFields, we udpate those values
   // in document
   const toUpdate = {};
-  const updateableFields = ["comments","rating"];
+  const updateableFields = ["comments"];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
